@@ -11,8 +11,11 @@ const ctx = canvas.getContext("2d");
 
 //calling new audio web api
 let audioElement = new Audio();
+const audioCtx = new AudioContext();
 let audioSource;
-let analyser;
+let analyzer;
+let bufferLength;
+let dataArray;
 
 audioFileInput.addEventListener('change', function(event) {
     let file = event.target.files[0];
@@ -21,12 +24,24 @@ audioFileInput.addEventListener('change', function(event) {
         audioElement.src = fileURL;
         audioElement.load();
         console.log("Audio file loaded:", file.name);
+        
+        if(!audioSource){
+            audioSource = audioCtx.createMediaElementSource(audioElement);
+            analyzer = audioCtx.createAnalyser();
+            analyzer.fftSize = 2048;
+            
+            bufferLength = analyzer.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            audioSource.connect(analyzer);
+            analyzer.connect(audioCtx.destination);
+        } 
     }
 });
 
 playButton.addEventListener('click', function(){
     if(audioElement.src){
-        audioElement.play();
+        audioCtx.resume();
         console.log("Playing", audioFileInput.files[0].name);
     }else{
         console.log("Haven't loaded anything");
