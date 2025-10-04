@@ -41,6 +41,7 @@ audioFileInput.addEventListener('change', function(event) {
 
 playButton.addEventListener('click', function(){
     if(audioElement.src){
+        audioElement.play();
         audioCtx.resume();
         console.log("Playing", audioFileInput.files[0].name);
     }else{
